@@ -57,7 +57,7 @@ Be extra careful when changing owners of contract -> always ask
 
 ---
 
-## Challenge 2 - Fallout
+## Challenge 3 - CoinFlip
 
 ### Challenge
 Rig a coinflip to get 10 consecutive wins
@@ -69,8 +69,25 @@ Vulnerability here is the way random number is generated inside `flip` function 
 ### Files
 [CoinFlip.sol](./contracts/CoinFlip.sol)
 [exploit script](./scripts/coinflipExploit.ts)
-[test case](./test/unit/coinflip.unit.testing.ts)
+[test case](./test/unit/coinflip.uint.testing.ts)
 
 ### Key learning
 If a protocol is using a random number, study carefully how that randomness is generated - if some deterministic parameters are used for generating random number, it is not really random & can be exploited. 
 
+---
+
+## Challenge 4 - Telephone
+
+### Challenge
+Change the owner in the contract
+
+### Vulnerability
+
+Vulnerability exploits general misconception that `tx.origin == msg.sender`. `tx.origin` refers to the original EOA that initiated the first transaction in the chain of transactions whereas `msg.sender`refers to the immediate contract that has triggered a specific transaction.
+
+In this exercise, I defined a `router` contract that inessence changes msg.sender viz-a-viz tx.origin. Any logic written with an implicit assumption that transaction sender is EOA can be violated by this router contract
+
+### Files
+[TelephoneExploiter.sol](./contracts/Telephone.sol)
+[exploit script](./scripts/telephoneExploit.ts)
+[test case](./test/unit/telephone.uint.testing.ts)
