@@ -3,6 +3,7 @@
 
 ## Challenge 1 - Fallback
 
+### Challenge
 Challenge is to change owner and drain contract
 
 ### Vulnerability
@@ -28,7 +29,9 @@ Be extra careful when changing owners of contract -> always ask
 ---
 
 ## Challenge 2 - Fallout
-Challenge is to change ownerr and drain contract
+
+### Challenge
+Challenge is to change owner and drain contract
 
 ### Vulnerability
 
@@ -51,3 +54,23 @@ Be extra careful when changing owners of contract -> always ask
  - who is allowed to access this function - public/ private / internal  & modifiers that control the access
  - is there a way to accidentally or maliciously change ownership
  - what are the implications of a changed ownership (if a owner can drain funds, stakes of ownership are extremely high)
+
+---
+
+## Challenge 2 - Fallout
+
+### Challenge
+Rig a coinflip to get 10 consecutive wins
+
+### Vulnerability
+
+Vulnerability here is the way random number is generated inside `flip` function is defined in [CoinFlip.sol](./contracts/CoinFlip.sol). To generate a random number, function uses the current block hash -> this knowledge allows us to replicate a random number and play only if the result is favorable for us. This way, we can keep playing until we generate 10 consecutive wins
+
+### Files
+[CoinFlip.sol](./contracts/CoinFlip.sol)
+[exploit script](./scripts/coinflipExploit.ts)
+[test case](./test/unit/coinflip.unit.testing.ts)
+
+### Key learning
+If a protocol is using a random number, study carefully how that randomness is generated - if some deterministic parameters are used for generating random number, it is not really random & can be exploited. 
+
