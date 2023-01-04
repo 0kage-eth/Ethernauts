@@ -119,3 +119,30 @@ If `unchecked` math is used in versions >0.8.0, always explore possibility of ov
 
 
 ---
+
+## Challenge 6 - Delegate
+
+### Challenge
+Change the `owner` of `Delegation` contract
+
+### Vulnerability
+
+This challenge tests our understanding of `delegateCall` in solidity - `delegateCall` calls a function in sendee contract with the same context as sender contract. So although the contract logic is being executed from `sendee` contract, contract state is present in the sender contract.
+
+In this example, the `Delegate` contract has a provision to change the owner by calling `pwn()` function - but changing the owner here means we are actually changing the `owner` state variable inside the Delegation contract.
+
+Another interesting technique here is how we send a encoded txn via `ethers.js`. To trigger a `fallback` function inside a `Delegation` contract, we use `sendTransaction` in ethers.js. `msg.data` is encoded data that is sent using the `abi` and `interface` feature in ethers.js. Check out the test case & the `delegateExploit` script
+
+### Files
+[Delegation.sol](./contracts/Delegate.sol)
+[exploit script](./scripts/delegateExploit.ts)
+[test case](./test/unit/delegate.uint.testing.ts)
+
+### Key learning
+
+Key here is to understand how EVM separates logic layer from state layer when using `delegateCall`. From security standpoint, delegateCall can expose 2 vulnerabilities
+- mismatch in name of state variable in delegator/delegatee contracts. This could lead to zero states corrupting logic
+- order of declaration of state variables - EVM does a one-to-one mapping of state variables in that order -> so any ordermismatch can overwrite wrong state variables 
+- when the `delegatee` contract changes state of `delegator` - be absolutely sure that this does not create side effects in state of `delegator` contract that can be exploited 
+
+---
