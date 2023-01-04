@@ -146,3 +146,29 @@ Key here is to understand how EVM separates logic layer from state layer when us
 - when the `delegatee` contract changes state of `delegator` - be absolutely sure that this does not create side effects in state of `delegator` contract that can be exploited 
 
 ---
+
+---
+
+## Challenge 7 - Force
+
+### Challenge
+Forcibly increase balance of a `Force` contract
+
+### Vulnerability
+
+Key vulnerability here is to believe that if contract does not have `payable`, there is no way to send eth to this contract. One possible way is to use `selfdestruct` feature of eth -> when self destructing, a contract forcibly sends eth to a contract address, independent of whether it is `payable` or not
+
+I created another contract called `ForceExploit` -> sent it some eth in constructor -> then called `attack()` function which triggers `selfdestruct` with target address to send funds marked as `force` contract. This way we force balance of `force` contract > 0
+
+### Files
+[Force.sol & ForceExploiter.sol](./contracts/Force.sol)
+[exploit script](./scripts/forceExploit.ts)
+[test case](./test/unit/force.uint.testing.ts)
+
+### Key learning
+
+- If a contract logic has `address(this).balance == 0` -> we have learnt that this condition can be violated -> anything inside this if condition can be made to never execute by forcibly sending eth to this contract
+
+- not having a `payable` modifier does not mean a contract cannot receive funds -> yes, it cannot receive funds by normal channels -> but there are other ways than `transfer`, `send` and `call` functions to send eth to a contract
+
+---

