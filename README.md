@@ -91,3 +91,31 @@ In this exercise, I defined a `router` contract that inessence changes msg.sende
 [TelephoneExploiter.sol](./contracts/Telephone.sol)
 [exploit script](./scripts/telephoneExploit.ts)
 [test case](./test/unit/telephone.uint.testing.ts)
+
+### Key learning
+Understanding the difference between `msg.sender` and `tx.origin`. Look for instances where `tx.origin` is used - and think of ways in which this can be exploited. Since composability is the name of game - there is likely a way to exploit a contract using `tx.origin` - should generally be avoided 
+
+---
+
+## Challenge 5 - Token
+
+### Challenge
+End up with a very large balance in your account
+
+### Vulnerability
+
+Vulnerability exploits arithmetic overflow/underflow operations in solidity - if a balance in account A is `100` and you subtract `101` from it - if unchecked for SafeMath, balance in account A becomes `max(uint256)` - In versions preceding 0.8.0, Solidity compiler does not throw an error if there is underflow/overflow. Instead the value is rolled over to highest value if there is underflow & to the lowest value if there is overflow.
+
+Key here is to transfer to an external account an amount that is higher than existing balance. This automatically increases our balance to near infinity
+
+
+### Files
+[token.sol](./contracts/Token.sol)
+[exploit script](./scripts/tokenExploit.ts)
+[test case](./test/unit/token.uint.testing.ts)
+
+### Key learning
+If `unchecked` math is used in versions >0.8.0, always explore possibility of overflow/underflow. If it exists, then figure out vulnerabilities associated with an infinitely large number or 0 (when there is an underflow or overflow respectively)
+
+
+---
