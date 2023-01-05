@@ -12,7 +12,7 @@ import { Fallback } from "../../typechain-types"
           let deployer: SignerWithAddress, exploiter: SignerWithAddress
           // run before test cases
           before(async () => {
-              await deployments.fixture(["all"])
+              await deployments.fixture(["fallback"])
               fallbackContract = await ethers.getContract("Fallback")
               const accounts = await ethers.getSigners()
               deployer = accounts[0]

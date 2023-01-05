@@ -147,8 +147,6 @@ Key here is to understand how EVM separates logic layer from state layer when us
 
 ---
 
----
-
 ## Challenge 7 - Force
 
 ### Challenge
@@ -172,3 +170,27 @@ I created another contract called `ForceExploit` -> sent it some eth in construc
 - not having a `payable` modifier does not mean a contract cannot receive funds -> yes, it cannot receive funds by normal channels -> but there are other ways than `transfer`, `send` and `call` functions to send eth to a contract
 
 ---
+
+## Challenge 8 - Vault
+
+### Challenge
+Unlock the vault
+
+### Vulnerability
+Storage of state variables in a smart contract are dependent on storage layout rules of EVM. Although a variable is defined as `private`, it does not mean we cannot access that variable onchain - nothing stored onchain is really private in that sense. Storing of passwords and sensitive data onchain introduces vulnerabilities because that data can be accesses by any exploiter if he knows how to use storage layout rules to point to the correct storage location
+
+In current example, bool variable `locked` occupies the 0'th storage slot and `password`, a bytes32 variable, occupies the first slot. I simply use the `getStorageAt` function on provider of ethers.js to access the password. Once I have password, calling the `unlock` function to open vault is trivial
+
+
+### Files
+[Vault.sol](./contracts/Vault.sol)
+[exploit script](./scripts/vaultExploit.ts)
+[test case](./test/unit/vault.uint.testing.ts)
+
+### Key learning
+
+Key learning is to note that nothing in a contract is really private. Every variable, whether public/private or internal can be accessed by users onchain. 
+
+`Private` is just visibility access to a user - doesn't mean that user can't access the raw data stored against that variable
+
+So any sensitive data onchain that can exploited should be carefully observed while auditing.
