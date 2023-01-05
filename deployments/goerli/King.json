@@ -1,0 +1,125 @@
+{
+  "address": "0x50FAF5eF22d1dCAcfd85F05a9e8EB73d88D9DF9b",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "payable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "_king",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "prize",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "transactionHash": "0xef2df430204f3532d0816e301f632692f4e6c6bf8e35c24606c1d4518d52aad2",
+  "receipt": {
+    "to": null,
+    "from": "0xd7Dd548772fF126999a1a02640beFA34C2ce470B",
+    "contractAddress": "0x50FAF5eF22d1dCAcfd85F05a9e8EB73d88D9DF9b",
+    "transactionIndex": 40,
+    "gasUsed": "284901",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x0112084cda1535da63effac048371a4f4731b2a812c5954fadd4f40eca01f6df",
+    "transactionHash": "0xef2df430204f3532d0816e301f632692f4e6c6bf8e35c24606c1d4518d52aad2",
+    "logs": [],
+    "blockNumber": 8258880,
+    "cumulativeGasUsed": "8128927",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "d5132143175bd35ffc74b5c57761b2c4",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"_king\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"prize\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/King.sol\":\"King\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/King.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ncontract King {\\n    address king;\\n    uint public prize;\\n    address public owner;\\n\\n    constructor() payable {\\n        owner = msg.sender;\\n        king = msg.sender;\\n        prize = msg.value;\\n    }\\n\\n    receive() external payable {\\n        require(msg.value >= prize || msg.sender == owner);\\n        payable(king).transfer(msg.value);\\n        king = msg.sender;\\n        prize = msg.value;\\n    }\\n\\n    function _king() public view returns (address) {\\n        return king;\\n    }\\n}\\n\\ncontract KingExploit {\\n    constructor() payable {}\\n\\n    function sendFunds(address receiver, uint256 amount) external {\\n        require(amount <= address(this).balance, \\\"insufficient balance\\\");\\n        (bool success, ) = payable(receiver).call{value: amount}(\\\"\\\");\\n        require(success, \\\"payment failed\\\");\\n    }\\n\\n    receive() external payable {\\n        revert(\\\"transfer error\\\");\\n    }\\n}\\n\",\"keccak256\":\"0xeba5fa8f31807b88c209bbbdd5c01ec811143487511c6339cd2ca063bdfff60b\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405233600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550346001819055506102f48061009b6000396000f3fe6080604052600436106100385760003560e01c806329cc6d6f146101585780638da5cb5b14610183578063e3ac5d26146101ae57610153565b36610153576001543410158061009b5750600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16145b6100a457600080fd5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc349081150290604051600060405180830381858888f1935050505015801561010a573d6000803e3d6000fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550346001819055005b600080fd5b34801561016457600080fd5b5061016d6101d9565b60405161017a919061026f565b60405180910390f35b34801561018f57600080fd5b50610198610202565b6040516101a5919061026f565b60405180910390f35b3480156101ba57600080fd5b506101c3610228565b6040516101d091906102a3565b60405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102598261022e565b9050919050565b6102698161024e565b82525050565b60006020820190506102846000830184610260565b92915050565b6000819050919050565b61029d8161028a565b82525050565b60006020820190506102b86000830184610294565b9291505056fea2646970667358221220c0baed2fc3da37e5266c411afa529ddfcf05c0c600461b4b33850f9912cd0c2f64736f6c63430008110033",
+  "deployedBytecode": "0x6080604052600436106100385760003560e01c806329cc6d6f146101585780638da5cb5b14610183578063e3ac5d26146101ae57610153565b36610153576001543410158061009b5750600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16145b6100a457600080fd5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc349081150290604051600060405180830381858888f1935050505015801561010a573d6000803e3d6000fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550346001819055005b600080fd5b34801561016457600080fd5b5061016d6101d9565b60405161017a919061026f565b60405180910390f35b34801561018f57600080fd5b50610198610202565b6040516101a5919061026f565b60405180910390f35b3480156101ba57600080fd5b506101c3610228565b6040516101d091906102a3565b60405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102598261022e565b9050919050565b6102698161024e565b82525050565b60006020820190506102846000830184610260565b92915050565b6000819050919050565b61029d8161028a565b82525050565b60006020820190506102b86000830184610294565b9291505056fea2646970667358221220c0baed2fc3da37e5266c411afa529ddfcf05c0c600461b4b33850f9912cd0c2f64736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3,
+        "contract": "contracts/King.sol:King",
+        "label": "king",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 5,
+        "contract": "contracts/King.sol:King",
+        "label": "prize",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 7,
+        "contract": "contracts/King.sol:King",
+        "label": "owner",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

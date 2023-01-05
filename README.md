@@ -191,6 +191,25 @@ In current example, bool variable `locked` occupies the 0'th storage slot and `p
 
 Key learning is to note that nothing in a contract is really private. Every variable, whether public/private or internal can be accessed by users onchain. 
 
-`Private` is just visibility access to a user - doesn't mean that user can't access the raw data stored against that variable
+`Private` is just visibility access. Marking a variable as private only prevents other contracts from accessing it - doesn't mean that user can't access the raw data stored against that variable
 
 So any sensitive data onchain that can exploited should be carefully observed while auditing.
+
+
+---
+
+## Challenge 9 - King
+
+### Challenge
+Block the game once you become the king. Nobody else can be the king
+
+### Vulnerability
+
+Key vulnerability in this challenge is the nature of `transfer` function of solidity. `transfer` function passes a fixed 2300 gas to the fallback - and reverts if the fallback uses more than 2300 gas - so when `receiver` is a contract instead of EOA, transfer function reverts.
+
+To block the game, all we need to do is to make the `transfer` function revert -> when it reverts, new king and new prize is never set -> and effectively the contract gets locked forever
+
+### Files
+[King.sol & KingExploit.sol](./contracts/King.sol)
+[exploit script](./scripts/kingExploit.ts)
+[test case](./test/unit/king.uint.testing.ts)
