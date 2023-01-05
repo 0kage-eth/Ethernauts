@@ -207,9 +207,38 @@ Block the game once you become the king. Nobody else can be the king
 
 Key vulnerability in this challenge is the nature of `transfer` function of solidity. `transfer` function passes a fixed 2300 gas to the fallback - and reverts if the fallback uses more than 2300 gas - so when `receiver` is a contract instead of EOA, transfer function reverts.
 
-To block the game, all we need to do is to make the `transfer` function revert -> when it reverts, new king and new prize is never set -> and effectively the contract gets locked forever
+To block the game, all we need to do is to make the `transfer` function revert -> when it reverts, new king and new prize is never set -> and effectively the contract gets locked forever. This is a real world case - read more on this [here](http://www.kingoftheether.com/postmortem.html)
 
 ### Files
 [King.sol & KingExploit.sol](./contracts/King.sol)
 [exploit script](./scripts/kingExploit.ts)
 [test case](./test/unit/king.uint.testing.ts)
+
+### Key learning
+
+`transfer` function should not be used when receiver can be a `contract` address - even if the expected behaviour is for EOAs to interact with contract, an exploiter can use a `contract` router to block transfers. After Turkey upgrade, if there is a  `transfer` used, always recommend to update to `call` function for safe transfers
+
+---
+
+## Challenge 10 - Reentrancy
+
+### Challenge
+Drain all the funds in the pool
+
+### Vulnerability
+
+`Reentrancy` is a classic vulnerability where transfers are made BEFORE updating state in the contract - an exploiter can use the `fallback` function to re-enter the contract and take advantage of the fact that the state is not yet updated.
+
+In the current case, `balances` are updated after `transfer` is executed - so the receiver can re-initiate withdrawal from within the fallback function -> unfortunately, since `balance[receiver]` is not updated, withdrawal will repeat in the loop until all funds are drained from contract
+
+
+### Files
+[Reentrant.sol & ReentrancyExploiter.sol](./contracts/Reentrancy.sol)
+[exploit script](./scripts/reentrancyExploit.ts)
+[test case](./test/unit/reentrancy.unit.testing.ts)
+
+
+### Key learning
+Most common form of attacks - always look out for transfers out of the contract. Check if `checks-effects-interactions` pattern is used OR if OZ `reentrancy` library is used. Another solution is to let users pull payments rather than contract sending payments to receiver.
+
+For more on this, read [OZ blog](https://blog.openzeppelin.com/15-lines-of-code-that-could-have-prevented-thedao-hack-782499e00942/) on DAO attack
