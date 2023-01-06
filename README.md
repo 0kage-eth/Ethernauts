@@ -242,3 +242,31 @@ In the current case, `balances` are updated after `transfer` is executed - so th
 Most common form of attacks - always look out for transfers out of the contract. Check if `checks-effects-interactions` pattern is used OR if OZ `reentrancy` library is used. Another solution is to let users pull payments rather than contract sending payments to receiver.
 
 For more on this, read [OZ blog](https://blog.openzeppelin.com/15-lines-of-code-that-could-have-prevented-thedao-hack-782499e00942/) on DAO attack
+
+
+---
+
+## Challenge 11 - Elevator
+
+### Challenge
+Go to the top floor 
+
+### Vulnerability
+
+This one I couldn't crack without help - key vulnerability here is that an `interface` function is used twice, once outside a `if` block and once inside. Definition of the function can be changed to hack this vulnerability - if I define a function that gives a `false` first time and gives a `true` second time -> I can pass the `if` condition and once inside, on second call, I can set `top` = true
+
+In a normal function, changing logic of same function would not have been possible. But this is an `interface` whose implementation is open ended. And since interface wraps around `msg.sender`, I can define a contract with custom implementation of `isLastFloor` -> I keep a counter and change logic based on number of times function is called.
+
+This is a tricky one - simple yet tricky...
+
+### Files
+[Elevator & ElevatorExploit](./contracts/Elevator.sol)
+[exploit script](./scripts/elevatorExploit.ts)
+[test case](./test/unit/elevator.unit.testing.ts)
+
+
+### Key Learning
+
+- Key learning is that `interface` functions can take any implementation based on the address that interface points to -> if `interface` wraps around a contract that we can control -> we can always change implementation of a function to suit our needs - this creates vulnerability
+
+- Another learning is that we can make function implementation `state` dependent - same function can have opposite outputs based on a counter -> by controlling number of times we call (which is in our control), we can change behavior of function and hence its side effects

