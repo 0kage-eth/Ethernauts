@@ -270,3 +270,31 @@ This is a tricky one - simple yet tricky...
 - Key learning is that `interface` functions can take any implementation based on the address that interface points to -> if `interface` wraps around a contract that we can control -> we can always change implementation of a function to suit our needs - this creates vulnerability
 
 - Another learning is that we can make function implementation `state` dependent - same function can have opposite outputs based on a counter -> by controlling number of times we call (which is in our control), we can change behavior of function and hence its side effects
+
+
+---
+
+## Challenge 12 - Privacy
+
+### Challenge
+Unlock privacy 
+
+### Vulnerability
+
+This challenge tests our understanding of storage -> the bytes32[3] array that stores data starts from storage location 3 -> each storage slot takes 32 bytes -> and if a variable is <32 bytes, compiler tries to squeeze it in the same slot until there is overflow -> by that calculation, `locked` is in slot 0, `ID` is in slot 1, variables `flattening`, `denomination`, `awkwardness` are in slot 2 (8 bytes + 8 bytes + 16 bytes = 32 bytes), and `data` is an bytes32 array of 3 elements -> so `data(0)` in slot 3, `data(1)` is in slot 4, `data(2)` in slot5
+
+Once you can access storage, you can unlock contract
+
+### Files
+[Privacy](./contracts/Privacy.sol)
+[exploit script](./scripts/privacyExploit.ts)
+[test case](./test/unit/privacy.unit.testing.ts)
+
+
+### Key Learning
+
+Again, same learnings as before -> none of variable stored on blockchain are really private. Each state variable is accessible if we know how to search the storage layout -> any contract that stores sensitive information onchain that can change states of contract is vulnerable for exploitation.
+
+When auditing, always be on lookout for variables that `dev` assumes are inaccessible -> if accessing them helps us change state of blockchain, it becomes a critical vulnerability
+
+---
