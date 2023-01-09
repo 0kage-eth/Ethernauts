@@ -23,17 +23,19 @@ import { GatekeeperOne, GateKeeperExploit } from "../../typechain-types"
               // Uncomment below to brute force the gas to clear step 2
               // I did that and found gas price 82725
 
-              //              let gas = 82725
-              //   for (let i = 0; i <= 8191; i++) {
-              //       gas = 8191 * 10 + i
-              //       try {
-              const tx = await gatekeeperExploit.connect(exploiter).hack()
-              const receipt = await tx.wait(1)
-              //           break
-              //       } catch (e) {}
-              //   }
+              let gas = 0
+              for (let i = 0; i <= 8191; i++) {
+                  gas = 8191 * 10 + i
+                  try {
+                      const tx = await gatekeeperExploit
+                          .connect(exploiter)
+                          .hack(gas, { gasLimit: 2000000 })
+                      const receipt = await tx.wait(1)
+                      break
+                  } catch (e) {}
+              }
 
-              //   console.log("target gas price", gas)
+              console.log("target gas price", gas)
               expect(await gatekeeper.entrant()).equals(exploiter.address, "entrant = exploiter")
           })
       })
