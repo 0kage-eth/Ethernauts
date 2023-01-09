@@ -299,10 +299,10 @@ When auditing, always be on lookout for variables that `dev` assumes are inacces
 
 ---
 
-## Challenge 13 - Gate Keeper One
+## Challenge 13 - Gate Keeper One (Unfinished)
 
 ### Challenge
-Gate Keeper One 
+Gate Keeper One - pass all gates
 
 ### Vulnerability
 
@@ -332,3 +332,34 @@ From security standpoint, gas golfing is not as important  - but the key bit ope
 
 TBD - Need to solve this.... unsolved as of now
 
+---
+
+## Challenge 14 - Gate Keeper Two
+
+### Challenge
+Gate Keeper Two - Pass all gates
+
+### Vulnerability
+
+3 Key vulnerabilities here that are tested by this challenge
+
+1. Same as above, a contract router can make `tx.origin != msg.sender`. Assuming both would be same implicitly will make contract vulnerable
+
+2. Checking contract code size == 0 can be exploited by calling a function from within a constructor of a contract - at the time of constructor, storage is not allocated. So `extcodesize` operation leads to 0
+
+
+```
+        assembly {
+            x := extcodesize(caller())
+        }
+        require(x == 0);
+```
+3. Bitwise operations - XOR is communicative. And a ^a  = 0, 0 ^b = b => this helps us figure out what the key should be to break gate 3
+
+ ### Files
+[Gate Keeper Two](./contracts/GateKeeperTwo.sol)
+[exploit](./deploy/deployGateKeeperTwo.ts)
+
+### Key Learning
+
+In this section -> understanding how EVM creates a contract is the key learning.
