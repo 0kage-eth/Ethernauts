@@ -363,3 +363,23 @@ Gate Keeper Two - Pass all gates
 ### Key Learning
 
 In this section -> understanding how EVM creates a contract is the key learning.
+
+---
+
+## Challenge 15 - Naught Coin
+
+### Challenge
+Drain all Naught Coin tokens from player
+
+### Vulnerability
+
+ERC20 spec has both functions `transfer` and `transferFrom`, By putting in the `lockTokens` modifier, deployer has arrested the possibility of using `transfer` function. But what we learn from reading ERC20 spec is that there is another way to transfer tokens, ie using `transferFrom`. In this, player needs to use `approve` function to give another address permission to spend its tokens - we exploit this feature to drain funds from player even though a lock exists on direct transfers
+
+ ### Files
+[NaughtCoin And NaughtCoinExploit](./contracts/NaughtCoin.sol)
+[exploit](./scripts/naughtCoinExploit.ts)
+[test case](./test/unit/naughtcoin.unit.testing.ts)
+
+### Key Learning
+
+ERC20 spec and how we can use `approve`, `allowance`, `transfer` and `transferFrom` functions
