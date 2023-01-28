@@ -383,3 +383,35 @@ ERC20 spec has both functions `transfer` and `transferFrom`, By putting in the `
 ### Key Learning
 
 ERC20 spec and how we can use `approve`, `allowance`, `transfer` and `transferFrom` functions
+
+---
+
+## Challenge 16 - Preservation
+
+### Challenge
+Change owner of the Preservation contract
+
+### Vulnerability
+
+This is a beautiful exercise that tests multiple concepts
+
+- Working on a `delegateCall` - delegateCall always keeps the context of the caller intact while calling logic/function in a different contract -> even when callee contract has its own storage -> storage accessed during the execution of the contract belongs to the callee
+
+- Another concept tested here is our understanding of storage layour -> solidity stores the state variables in the order of definitions (variables defined first are stored first & those defined later are stored later). Note that while there are 3 state variables in preservation contract -> there is only 1 defined in the library contract on which is delegate called. In such a case -> when the user is accessing first variable of the callee contract, he is actually accessing the first storage variable of caller contract. This is what we exploit first -> when function `setFirstTime` is called -> we pass the address of `exploit` contract (by converting address to uint256) -> this effectively overwrites the address of first library with `exploitLibraryContract` address we defined
+
+- Once this is done, we again use the knowledge of storage layout to define 3 variables, first two of which are dummy variables and third variable corresponds to the `owner`, which is what we want to change. Note that in the exploit contract, I've redefined the `setTime` function that changes the `owner`. When we call the `setFirstTime` on the preservation contract with address of the exploiter, the owner changes & we have full control of preservation contract
+
+ ### Files
+[Preservation](./contracts/Preservation.sol)
+[exploit](./scripts/preservationExploit.ts)
+[test case](./test/unit//preservation.uint.testing.ts)
+
+### Key Learning
+
+Key learnings here are:
+
+1. Library contracts use `delegateCall` feature to abstract logic. It is never advisable to have storage defined in Librariers - this might be exploited to change the state of the callee contract
+
+2. Storage is stored in the order it is defined -> if a delegate contract has a variable, order of variables in delegate contract & number of storage slots should be carefully verified -> any error in ordering can be exploited 
+
+3. Casting of an address into uint256 and vice versa - essentially address is just a uint160 

