@@ -14,6 +14,7 @@ const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL || ""
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || ""
 const POLYGON_MAINNET_RPC_URL = process.env.POLYGON_MAINNET_RPC_URL || ""
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ""
+const PRIVATE_KEY2 = process.env.PRIVATE_KEY2 || ""
 
 // this needs to be revisited
 const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER
@@ -43,7 +44,12 @@ const config: HardhatUserConfig = {
         },
         goerli: {
             url: GOERLI_RPC_URL,
-            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            accounts:
+                PRIVATE_KEY !== undefined
+                    ? PRIVATE_KEY2 !== undefined
+                        ? [PRIVATE_KEY, PRIVATE_KEY2]
+                        : [PRIVATE_KEY]
+                    : [],
             //accounts: {
             //     mnemonic: MNEMONIC,
             // },

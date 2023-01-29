@@ -415,3 +415,35 @@ Key learnings here are:
 2. Storage is stored in the order it is defined -> if a delegate contract has a variable, order of variables in delegate contract & number of storage slots should be carefully verified -> any error in ordering can be exploited 
 
 3. Casting of an address into uint256 and vice versa - essentially address is just a uint160 
+
+
+---
+
+## Challenge 17 - Recovery
+
+### Challenge
+Pass back the eth in SimpleToken contract back to Recovery contract. Note that we don't know the address of SimpleToken(assumption is we lost the address)
+
+### Vulnerability
+
+Key point to understand here that every ethereum adddress is not a random `bytes20` but is determinstic. There is a logic on how to retrieve a deployed addresss if we know the `deployer` address along with the nonce. There is a beautiful article on thie [Ethereum quirks](https://swende.se/blog/Ethereum_quirks_and_vulns.html) that exploits this behavior to suggest a secret method to stash funds. An added article here that is also helpful in understanding how ethereum contract address gets generated is [here](https://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed)
+
+So in this case, owner has forgotten the address of Simpletoken contract. Note that this is an internal message call & NOT a transaction that is recorded on blockchain. Although we can find the details of this msg call on Etherscan under `internal` transaction tab, it is important to understand that the blockchain itself doesn't have this transaction. Instead, etherscan runs a EVM and records all the internal msg calls 
+
+
+Once the address is calculated using nonce 1, sending ETH back is a trivial exercise
+
+
+ ### Files
+[Recovery & Recovery Exploit](./contracts/Recovery.sol)
+[recoveryExploit](./scripts/recoveryExploit.ts)
+[test case](./test/unit/recovery.unit.testing.ts)
+
+### Key Learning
+
+Key learnings here are:
+
+1. Every deployed address can be recovered back if we know the noce & the sender
+
+2. Eth can be sent to a yet undeployed address and can be hidden there (there is a lot of risk in doing this as one should not let the nonce slip past the transaction number)
+
