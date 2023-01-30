@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/MagicNumber.sol": {
+      "content": "//SPDX-License-Identifier:MIT\n\npragma solidity ^0.8.0;\n\ncontract MagicNum {\n    address public solver;\n\n    constructor() {}\n\n    function setSolver(address _solver) public {\n        solver = _solver;\n    }\n\n    /*\n    ____________/\\\\\\_______/\\\\\\\\\\\\\\\\\\_____        \n     __________/\\\\\\\\\\_____/\\\\\\///////\\\\\\___       \n      ________/\\\\\\/\\\\\\____\\///______\\//\\\\\\__      \n       ______/\\\\\\/\\/\\\\\\______________/\\\\\\/___     \n        ____/\\\\\\/__\\/\\\\\\___________/\\\\\\//_____    \n         __/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_____/\\\\\\//________   \n          _\\///////////\\\\\\//____/\\\\\\/___________  \n           ___________\\/\\\\\\_____/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_ \n            ___________\\///_____\\///////////////__\n  */\n}\n\n// BYTE Code\n\n// -n Runtime Code\n// -n regardless of the function called, we have to return the number 42\n// -n first we store number 42 in memory, second we return the memory location\n\n//-n here is opcodes for storing 42 to memory\n\n/*\nPUSH1 0x2a //-n pushes 42 to stack\nPUSH1 0 //-n pushes memory location starting 0\nMSTORE //-n stores 42 at memory location 0 (note that memory location is 32 bytes)\n*/\n\n//-n here is opcodes for returning variable in memory\n\n/*\nPUSH1 0x20 //-n length - 32 bytes\nPUSH1 0 //-n at location 0\nRETURN\n*/\n\n//-n combining the above sequency of opcodes we get a byte code - returns 42 always\n//-n 602a60005260206000f3\n\n//-n next step is to write creation code\n//-n creation code in our case creates a contract that returns 42 regardless of what function being called\n//-n so basically creation code stores runtime to memory\n//-n here is sequence of opcodes\n\n/*\nPUSH10 0x602a60005260206000f3 //-n length = 20, so bytes = 10 // putting 0x to make it clear its not a number but a byte code\nPUSH1 0\nMSTORE\n\n//-n this returns the 32 bytes -> what we need is the last 10 bytes, so we need to offset the value and return only 10 bytes\n\nPUSH1 0x0a //-n 10 - 10 bytes\nPUSH1 0x16 //-n 22 - start position 22 bytes\nRETURN\n*/\n\n//-n translating above 2 series of opcodes into bytecode\n//-n 69602a60005260206000f3600052600a6016f3\n\ncontract Solver {\n    constructor(MagicNum _target) {\n        address addr;\n        //-n this bytecode is for creation of\n        bytes memory bytecode = hex\"69602a60005260206000f3600052600a6016f3\";\n        assembly {\n            addr := create(0, add(bytecode, 0x20), 0x13) //-n we offset bytecode bytes array by 32 bytes\n            //-n because first 32 bytes have the size of the array\n            //-n 0x13 refers to 19 bytes -> 38 characters (which is length of bytecode above)\n        }\n        require(addr != address(0), \"zero address\");\n\n        //-n runtime code 0x602a60005260206000f3 has less than 10 opcodes\n        _target.setSolver(addr);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

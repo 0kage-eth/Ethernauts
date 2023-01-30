@@ -1,0 +1,54 @@
+{
+  "address": "0x4913e594A947583b180De3C439482f50A2C19E1b",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract MagicNum",
+          "name": "_target",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "transactionHash": "0x9001e96df7771e8147937bddcf3bb9e9d43726f2454ce55e813a032a7d327d3f",
+  "receipt": {
+    "to": null,
+    "from": "0xd7Dd548772fF126999a1a02640beFA34C2ce470B",
+    "contractAddress": "0x4913e594A947583b180De3C439482f50A2C19E1b",
+    "transactionIndex": 19,
+    "gasUsed": "136854",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xac6b86b1375c1cb4e340f7b618a1d496c03e542ddee14339bcaeed1780a4c9e5",
+    "transactionHash": "0x9001e96df7771e8147937bddcf3bb9e9d43726f2454ce55e813a032a7d327d3f",
+    "logs": [],
+    "blockNumber": 8401219,
+    "cumulativeGasUsed": "24839349",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xD02ca2d1dfEDf64ab6E5cecd14500688B2C7ec2E"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "3f13aeb3783efa64b3ce2569e2187345",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract MagicNum\",\"name\":\"_target\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/MagicNumber.sol\":\"Solver\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/MagicNumber.sol\":{\"content\":\"//SPDX-License-Identifier:MIT\\n\\npragma solidity ^0.8.0;\\n\\ncontract MagicNum {\\n    address public solver;\\n\\n    constructor() {}\\n\\n    function setSolver(address _solver) public {\\n        solver = _solver;\\n    }\\n\\n    /*\\n    ____________/\\\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_____        \\n     __________/\\\\\\\\\\\\\\\\\\\\_____/\\\\\\\\\\\\///////\\\\\\\\\\\\___       \\n      ________/\\\\\\\\\\\\/\\\\\\\\\\\\____\\\\///______\\\\//\\\\\\\\\\\\__      \\n       ______/\\\\\\\\\\\\/\\\\/\\\\\\\\\\\\______________/\\\\\\\\\\\\/___     \\n        ____/\\\\\\\\\\\\/__\\\\/\\\\\\\\\\\\___________/\\\\\\\\\\\\//_____    \\n         __/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_____/\\\\\\\\\\\\//________   \\n          _\\\\///////////\\\\\\\\\\\\//____/\\\\\\\\\\\\/___________  \\n           ___________\\\\/\\\\\\\\\\\\_____/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_ \\n            ___________\\\\///_____\\\\///////////////__\\n  */\\n}\\n\\n// BYTE Code\\n\\n// -n Runtime Code\\n// -n regardless of the function called, we have to return the number 42\\n// -n first we store number 42 in memory, second we return the memory location\\n\\n//-n here is opcodes for storing 42 to memory\\n\\n/*\\nPUSH1 0x2a //-n pushes 42 to stack\\nPUSH1 0 //-n pushes memory location starting 0\\nMSTORE //-n stores 42 at memory location 0 (note that memory location is 32 bytes)\\n*/\\n\\n//-n here is opcodes for returning variable in memory\\n\\n/*\\nPUSH1 0x20 //-n length - 32 bytes\\nPUSH1 0 //-n at location 0\\nRETURN\\n*/\\n\\n//-n combining the above sequency of opcodes we get a byte code - returns 42 always\\n//-n 602a60005260206000f3\\n\\n//-n next step is to write creation code\\n//-n creation code in our case creates a contract that returns 42 regardless of what function being called\\n//-n so basically creation code stores runtime to memory\\n//-n here is sequence of opcodes\\n\\n/*\\nPUSH10 0x602a60005260206000f3 //-n length = 20, so bytes = 10 // putting 0x to make it clear its not a number but a byte code\\nPUSH1 0\\nMSTORE\\n\\n//-n this returns the 32 bytes -> what we need is the last 10 bytes, so we need to offset the value and return only 10 bytes\\n\\nPUSH1 0x0a //-n 10 - 10 bytes\\nPUSH1 0x16 //-n 22 - start position 22 bytes\\nRETURN\\n*/\\n\\n//-n translating above 2 series of opcodes into bytecode\\n//-n 69602a60005260206000f3600052600a6016f3\\n\\ncontract Solver {\\n    constructor(MagicNum _target) {\\n        address addr;\\n        //-n this bytecode is for creation of\\n        bytes memory bytecode = hex\\\"69602a60005260206000f3600052600a6016f3\\\";\\n        assembly {\\n            addr := create(0, add(bytecode, 0x20), 0x13) //-n we offset bytecode bytes array by 32 bytes\\n            //-n because first 32 bytes have the size of the array\\n            //-n 0x13 refers to 19 bytes -> 38 characters (which is length of bytecode above)\\n        }\\n        require(addr != address(0), \\\"zero address\\\");\\n\\n        //-n runtime code 0x602a60005260206000f3 has less than 10 opcodes\\n        _target.setSolver(addr);\\n    }\\n}\\n\",\"keccak256\":\"0x6e4150d3137fc58e08fff7a2ffdfc2356109b0f46e527ce37d6ac4333b015dcb\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516102f03803806102f0833981810160405281019061003291906101cf565b6000806040518060400160405280601381526020017f69602a60005260206000f3600052600a6016f30000000000000000000000000081525090506013602082016000f09150600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16036100e7576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016100de90610259565b60405180910390fd5b8273ffffffffffffffffffffffffffffffffffffffff16631f879433836040518263ffffffff1660e01b81526004016101209190610288565b600060405180830381600087803b15801561013a57600080fd5b505af115801561014e573d6000803e3d6000fd5b505050505050506102a3565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061018a8261015f565b9050919050565b600061019c8261017f565b9050919050565b6101ac81610191565b81146101b757600080fd5b50565b6000815190506101c9816101a3565b92915050565b6000602082840312156101e5576101e461015a565b5b60006101f3848285016101ba565b91505092915050565b600082825260208201905092915050565b7f7a65726f20616464726573730000000000000000000000000000000000000000600082015250565b6000610243600c836101fc565b915061024e8261020d565b602082019050919050565b6000602082019050818103600083015261027281610236565b9050919050565b6102828161017f565b82525050565b600060208201905061029d6000830184610279565b92915050565b603f806102b16000396000f3fe6080604052600080fdfea26469706673582212204a0dc3eb30fef7e16bd94c95cb10a0b23e17c8b1676b02e07468cda81d69183364736f6c63430008110033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212204a0dc3eb30fef7e16bd94c95cb10a0b23e17c8b1676b02e07468cda81d69183364736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

@@ -447,3 +447,32 @@ Key learnings here are:
 
 2. Eth can be sent to a yet undeployed address and can be hidden there (there is a lot of risk in doing this as one should not let the nonce slip past the transaction number)
 
+
+---
+
+## Challenge 18 - MagicNumber
+
+### Challenge
+Challenge here is to have a contract return 42 and the entire operation should take less than 10 op codes (really really tiny amount of gas)
+
+### Vulnerability
+
+This is not a vulnerability but tests our understanding of opcodes & how byte code is created from bunching these opcodes together.
+
+This can be broken down into 3 parts
+ - runtime code
+ - creation code
+ - and setting the solver address
+
+`runtime code` refers to the code that gets run everytime we call a function -> basically returns 42 -> rundtime code for this is 0x602a60005260206000f3
+
+`creation code` refers to  contract code that returns this runtime code. We then send this into `create` opcode and offset by 32 bytes. I'm passing MagicNumber contract and setting this created contract address to the `setSolver` function
+
+
+
+ ### Files
+[MagicNumber & Solver](./contracts/MagicNumber.sol)
+
+### Key Learning
+
+Use opcodes and create bytecode from that opcodes.
